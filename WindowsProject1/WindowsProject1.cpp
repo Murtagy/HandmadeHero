@@ -5,22 +5,23 @@
 #define local_persist static
 #define global_variable static
 
-
 global_variable bool Running;
 global_variable BITMAPINFO BitmapInfo;
 global_variable void *BitmapMemory;
 global_variable HBITMAP BitmapHandle;
 global_variable HDC BitmapDeviceContext;
 
-
 internal void
-WinResizeDIBSection(int Width, int Height){
+WinResizeDIBSection(int Width, int Height)
+{
     // todo free
 
-    if(BitmapHandle){
+    if (BitmapHandle)
+    {
         DeleteObject(BitmapHandle);
-    } 
-    if (!BitmapDeviceContext) {
+    }
+    if (!BitmapDeviceContext)
+    {
         BitmapDeviceContext = CreateCompatibleDC(0);
     }
 
@@ -36,13 +37,12 @@ WinResizeDIBSection(int Width, int Height){
         DIB_RGB_COLORS,
         &BitmapMemory,
         0,
-        0
-    );
+        0);
 }
 
-
 internal void
-WinUpdateWindow(HDC DeviceContext, int x, int y, int w, int h){
+WinUpdateWindow(HDC DeviceContext, int x, int y, int w, int h)
+{
     StretchDIBits(
         DeviceContext,
         x, y, w, h,
@@ -58,66 +58,76 @@ LRESULT CALLBACK WinMainWindowCallback(
     HWND Window,
     UINT Message,
     WPARAM WParam,
-    LPARAM LParam
-) {
+    LPARAM LParam)
+{
     LRESULT Result = 0;
-    switch(Message) {
-        case WM_SIZE:
-        {
-            RECT ClientRect;
-            GetClientRect(Window, &ClientRect);
-            int Width = ClientRect.right - ClientRect.left;
-            int Height = ClientRect.bottom - ClientRect.top;
-            WinResizeDIBSection(
-                Width, Height
-            );
-            OutputDebugStringA("RESIZE\n");
-        } break;
-        case WM_DESTROY: {
-            OutputDebugStringA("DESTROY\n");
-            Running = false;
-        } break;
-        case WM_CLOSE: {
-            OutputDebugStringA("CLOSE\n");
-            Running = false;
-        } break;
-        case WM_ACTIVATEAPP: {} break;
-        case WM_PAINT: {
-            PAINTSTRUCT Paint;
-            HDC DevideContext = BeginPaint(Window, &Paint);
-            int X = Paint.rcPaint.left;
-            int w = Paint.rcPaint.right - X;
-            int Y = Paint.rcPaint.top;
-            int h = Paint.rcPaint.bottom - Y;
-            local_persist DWORD Operation = BLACKNESS;
-            WinUpdateWindow(DevideContext, X, Y, w, h);
-            EndPaint(Window, &Paint);
-        } break;
-        default: {
-            Result = DefWindowProc(Window, Message, WParam, LParam);
-        } break;
+    switch (Message)
+    {
+    case WM_SIZE:
+    {
+        RECT ClientRect;
+        GetClientRect(Window, &ClientRect);
+        int Width = ClientRect.right - ClientRect.left;
+        int Height = ClientRect.bottom - ClientRect.top;
+        WinResizeDIBSection(Width, Height);
+        OutputDebugStringA("RESIZE\n");
+    }
+    break;
+    case WM_DESTROY:
+    {
+        OutputDebugStringA("DESTROY\n");
+        Running = false;
+    }
+    break;
+    case WM_CLOSE:
+    {
+        OutputDebugStringA("CLOSE\n");
+        Running = false;
+    }
+    break;
+    case WM_ACTIVATEAPP:
+    {
+    }
+    break;
+    case WM_PAINT:
+    {
+        PAINTSTRUCT Paint;
+        HDC DevideContext = BeginPaint(Window, &Paint);
+        int X = Paint.rcPaint.left;
+        int w = Paint.rcPaint.right - X;
+        int Y = Paint.rcPaint.top;
+        int h = Paint.rcPaint.bottom - Y;
+        local_persist DWORD Operation = BLACKNESS;
+        WinUpdateWindow(DevideContext, X, Y, w, h);
+        EndPaint(Window, &Paint);
+    }
+    break;
+    default:
+    {
+        Result = DefWindowProc(Window, Message, WParam, LParam);
+    }
+    break;
     }
     return Result;
 }
-
 
 // void foo(void) {   OutputDebugStringA("I am programming in C on Windows\n");}
 int CALLBACK WinMain(
     HINSTANCE Instance,
     HINSTANCE PrevInstance,
     LPSTR CommandLine,
-    int ShowCode
-)
+    int ShowCode)
 {
 
     WNDCLASS WindowClass = {};
-    const wchar_t CLASS_NAME[]  = L"Sample Window Class";
+    const wchar_t CLASS_NAME[] = L"Sample Window Class";
     WindowClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
     WindowClass.lpfnWndProc = WinMainWindowCallback;
     WindowClass.hInstance = Instance;
     WindowClass.lpszClassName = CLASS_NAME;
-    
-    if (RegisterClass(&WindowClass)) {
+
+    if (RegisterClass(&WindowClass))
+    {
 
         HWND WindowHandle = CreateWindowEx(
             0,
@@ -131,26 +141,28 @@ int CALLBACK WinMain(
             0,
             0,
             Instance,
-            0
-        );
-        if (WindowHandle) {
+            0);
+        if (WindowHandle)
+        {
             Running = true;
             while (Running)
             {
                 MSG Message = {};
                 BOOL Result = GetMessage(&Message, 0, 0, 0);
-                if (Result > 0) 
+                if (Result > 0)
                 {
                     TranslateMessage(&Message);
                     DispatchMessage(&Message);
                 }
-                else {break;}
+                else
+                {
+                    break;
+                }
             }
-        
-        } 
-    }else {
+        }
+    }
+    else
+    {
     }
     return 0;
 }
-
-
