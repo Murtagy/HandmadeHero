@@ -17,6 +17,23 @@ LRESULT CALLBACK MainWindowCallback(
         case WM_DESTROY: {} break;
         case WM_CLOSE: {} break;
         case WM_ACTIVATEAPP: {} break;
+        case WM_PAINT: {
+            PAINTSTRUCT Paint;
+
+            HDC DevideContext = BeginPaint(Window, &Paint);
+            int X = Paint.rcPaint.left;
+            int w = Paint.rcPaint.right - X;
+            int Y = Paint.rcPaint.top;
+            int h = Paint.rcPaint.bottom - Y;
+            static DWORD Operation = BLACKNESS;
+            PatBlt(DevideContext, X, Y, w, h, Operation);
+            if (Operation == BLACKNESS) {
+                Operation = WHITENESS;
+            } else {
+                Operation = BLACKNESS;
+            }
+            EndPaint(Window, &Paint);
+        } break;
         default: {
             Result = DefWindowProc(Window, Message, WParam, LParam);
         } break;
