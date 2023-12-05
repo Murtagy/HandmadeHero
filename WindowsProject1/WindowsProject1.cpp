@@ -97,7 +97,6 @@ LRESULT CALLBACK WinMainWindowCallback(
         int w = Paint.rcPaint.right - X;
         int Y = Paint.rcPaint.top;
         int h = Paint.rcPaint.bottom - Y;
-        local_persist DWORD Operation = BLACKNESS;
         WinUpdateWindow(DevideContext, X, Y, w, h);
         EndPaint(Window, &Paint);
     }
