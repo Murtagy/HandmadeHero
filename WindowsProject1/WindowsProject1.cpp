@@ -231,3 +231,8 @@ int CALLBACK WinMain(
     }
     return 0;
 }
+
+
+
+// 47:34 
+// TODO: step through code myself, then follow the guide
