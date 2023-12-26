@@ -80,10 +80,10 @@ WinResizeDIBSection(int Width, int Height)
 }
 
 internal void
-WinUpdateWindow(HDC DeviceContext, RECT *ClientRect, int x, int y, int w, int h)
+WinUpdateWindow(HDC DeviceContext, RECT ClientRect, int x, int y, int w, int h)
 {
-    int WindowWidth = ClientRect->right - ClientRect->left;
-    int WindowHeight = ClientRect->bottom - ClientRect->top;
+    int WindowWidth = ClientRect.right - ClientRect.left;
+    int WindowHeight = ClientRect.bottom - ClientRect.top;
     StretchDIBits(
         DeviceContext,
         // x, y, w, h,
@@ -145,7 +145,7 @@ LRESULT CALLBACK WinMainWindowCallback(
         RECT ClientRect;
         GetClientRect(Window, &ClientRect);
 
-        WinUpdateWindow(DevideContext, &ClientRect, X, Y, w, h);
+        WinUpdateWindow(DevideContext, ClientRect, X, Y, w, h);
         EndPaint(Window, &Paint);
     }
     break;
@@ -168,7 +168,7 @@ int CALLBACK WinMain(
 
     WNDCLASS WindowClass = {};
     const wchar_t CLASS_NAME[] = L"Sample Window Class";
-    WindowClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+    WindowClass.style = CS_HREDRAW | CS_VREDRAW;
     WindowClass.lpfnWndProc = WinMainWindowCallback;
     WindowClass.hInstance = Instance;
     WindowClass.lpszClassName = CLASS_NAME;
@@ -213,7 +213,7 @@ int CALLBACK WinMain(
                 int WindowWidth = ClientRect.right - ClientRect.left;
                 int WindowHeight = ClientRect.bottom - ClientRect.top;
                 RenderWeirdGradient(xOffset, yOffset);
-                WinUpdateWindow(DeviceContext, &ClientRect, 0, 0, WindowWidth, WindowHeight);
+                WinUpdateWindow(DeviceContext, ClientRect, 0, 0, WindowWidth, WindowHeight);
                 ++xOffset;
             }
         }
